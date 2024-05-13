@@ -20,9 +20,7 @@ def replace_paragraph_text(paragraph, replacements):
             for part in parts:
                 # Add each part back to the paragraph
                 run = paragraph.add_run(part)
-                # If the part is the value, apply bold formatting
-                if part == value:
-                    run.bold = True
+            
 
 def replace_cell_text(cell, replacements):
     for paragraph in cell.paragraphs:
@@ -64,6 +62,7 @@ def process_templates_from_folders(template_folder, excel_folder, output_format,
                     docx_stream.seek(0)
 
                     file_name = f"{template_name}_{index + 1}"
+
                     if output_format.lower() == 'pdf':
                         zipf.writestr(f"{file_name}.docx", docx_stream.read())
                     else:
