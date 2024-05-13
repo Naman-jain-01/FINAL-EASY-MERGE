@@ -100,7 +100,7 @@ app.post('/process-merge', upload.fields([
             fs.renameSync(path.join(outputFolder, file), path.join(downloadFolder, file));
         });
         
-
+        
         const pythonUpload = spawn('python', [
             './upload.py', 
             '--folder', downloadFolder, // This should be downloadFolder, not outputFolder if you're uploading the generated files
@@ -122,6 +122,7 @@ app.post('/process-merge', upload.fields([
             const downloadLinks = outputData.trim().split('\n');
             res.json(downloadLinks);
         });
+
 
         fs.readdirSync(templatesFolder).forEach(file => {
             fs.unlinkSync(path.join(templatesFolder, file));

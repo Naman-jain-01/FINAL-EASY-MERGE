@@ -41,7 +41,7 @@ def process_templates_from_folders(template_folder, excel_folder, output_format,
         os.makedirs(output_folder)
 
     for index, row in data.iterrows():
-        row_folder_name = f"Number_{index + 1}_files"
+        row_folder_name = f"row_{index + 1}_files"
         zip_path = os.path.join(output_folder, f"{row_folder_name}.zip")
         with zipfile.ZipFile(zip_path, 'w') as zipf:
             for template_file in os.listdir(template_folder):
@@ -64,7 +64,7 @@ def process_templates_from_folders(template_folder, excel_folder, output_format,
 
                     file_name = f"{template_name}_{index + 1}"
                     if output_format.lower() == 'pdf':
-                       zipf.writestr(f"{file_name}.docx", docx_stream.read())
+                        zipf.writestr(f"{file_name}.docx", docx_stream.read())
                     else:
                         zipf.writestr(f"{file_name}.docx", docx_stream.read())
 
