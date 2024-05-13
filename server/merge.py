@@ -40,13 +40,13 @@ def process_templates_from_folders(template_folder, excel_folder, output_format,
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    for template_file in os.listdir(template_folder):
-        if template_file.endswith('.docx'):
-            template_name = os.path.splitext(template_file)[0]
-            zip_path = os.path.join(output_folder, f"{template_name}_files.zip")
-
-            with zipfile.ZipFile(zip_path, 'w') as zipf:
-                for index, row in data.iterrows():
+    for index, row in data.iterrows():
+        row_folder_name = f"row_{index + 1}_files"
+        zip_path = os.path.join(output_folder, f"{row_folder_name}.zip")
+        with zipfile.ZipFile(zip_path, 'w') as zipf:
+            for template_file in os.listdir(template_folder):
+                if template_file.endswith('.docx'):
+                    template_name = os.path.splitext(template_file)[0]
                     template_path = os.path.join(template_folder, template_file)
                     new_doc = Document(template_path)
                     replacements = {column: str(row[column]) for column in data.columns}
