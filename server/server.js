@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-const port = 8000;
+const port = 9000;
 
 const downloadPath = path.join(__dirname, '../public/downloads'); // It's a good practice to use `downloadPath` instead of `downloadFolder` in app.use('/downloads', express.static(downloadFolder));
 const downloadFolder = path.join(__dirname, '../public/downloads');
@@ -68,6 +68,8 @@ app.post('/process-merge', upload.fields([
     { name: 'docx-files', maxCount: 10 },
     { name: 'excel-file', maxCount: 1 }
 ]), (req, res) => {
+
+    
     const pythonProcess = spawn('python', [
         'merge.py',
         '--template_folder', templatesFolder,
@@ -97,6 +99,7 @@ app.post('/process-merge', upload.fields([
         generatedFiles.forEach(file => {
             fs.renameSync(path.join(outputFolder, file), path.join(downloadFolder, file));
         });
+        
 
         const pythonUpload = spawn('python', [
             './upload.py', 

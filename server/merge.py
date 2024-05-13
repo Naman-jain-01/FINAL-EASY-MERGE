@@ -64,10 +64,7 @@ def process_templates_from_folders(template_folder, excel_folder, output_format,
 
                     file_name = f"{template_name}_{index + 1}"
                     if output_format.lower() == 'pdf':
-                        pdf_stream = io.BytesIO()
-                        pypandoc.convert_file(docx_stream, 'pdf', outputfile=pdf_stream)
-                        pdf_stream.seek(0)
-                        zipf.writestr(f"{file_name}.pdf", pdf_stream.read())
+                       zipf.writestr(f"{file_name}.docx", docx_stream.read())
                     else:
                         zipf.writestr(f"{file_name}.docx", docx_stream.read())
 
