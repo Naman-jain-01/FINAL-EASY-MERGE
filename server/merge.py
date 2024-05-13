@@ -9,12 +9,18 @@ import argparse
 
 def replace_paragraph_text(paragraph, replacements):
     for key, value in replacements.items():
-        pattern = f'{{{{ {key} }}}}'
+        pattern = f'{{{{ {key} }}}}'  # Find placeholders like '{{ key }}'
         if pattern in paragraph.text:
-            new_text = re.sub(re.escape(pattern), value, paragraph.text)
+            new_text = paragraph.text
+            # Replace each placeholder with its corresponding value
+            new_text = re.sub(re.escape(pattern), value, new_text)
             paragraph.clear()
-            for part in re.split(f'({re.escape(value)})', new_text):
+            # Split the text around the value to isolate it for formatting
+            parts = re.split(f'({re.escape(value)})', new_text)
+            for part in parts:
+                # Add each part back to the paragraph
                 run = paragraph.add_run(part)
+                # If the part is the value, apply bold formatting
                 if part == value:
                     run.bold = True
 
