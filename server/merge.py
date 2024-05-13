@@ -41,12 +41,52 @@ def process_templates_from_folders(template_folder, excel_folder, output_format,
         os.makedirs(output_folder)
 
     for index, row in data.iterrows():
-        row_folder_name = f"row_{index + 1}_files"
-        zip_path = os.path.join(output_folder, f"{row_folder_name}.zip")
+        zip_path = os.path.join(output_folder, f"Row_{index + 1}_files.zip")
+
         with zipfile.ZipFile(zip_path, 'w') as zipf:
             for template_file in os.listdir(template_folder):
                 if template_file.endswith('.docx'):
                     template_name = os.path.splitext(template_file)[0]
+                    template_path = os.path.join(template_folder, template_file)
+                    new_doc = Document(template_path)
+                    # Use row.to_dict() to ensure the row data is correctly formatted as a dict
+                    replacements = {column: str(row[column]) for column in data.columns if column in row}
+
+                    for paragraph in new_doc.paragraphs:
+                        replace_paragraph_text(paragraph, replacements)
+                    for table in new_doc.tables:
+                        for table_row in table.rows:
+                            for cell in table_row.cells:
+                                replace_cell_text(cell, replacements)
+
+                    docx_stream = io.BytesIO()
+                    new_doc.save(docx_stream)
+                    docx_stream.seek(0)
+
+                    file_name = f"{template_name}_{index + 1}"
+                    if output_format.lower() == 'pdf':
+                        zipf.writestr(f"{file_name}.docx", docx_stream.read())
+                    else:
+                        zipf.writestr(f"{file_name}.docx", docx_stream.read())
+
+    excel_files = [f for f in os.listdir(excel_folder) if f.endswith('.xlsx')]
+    if not excel_files:
+        raise FileNotFoundError("No Excel files found in the specified folder.")
+    excel_path = os.path.join(excel_folder, excel_files[0])
+
+    data = pd.read_excel(excel_path)
+    data.columns = data.columns.str.strip()
+
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    for template_file in os.listdir(template_folder):
+        if template_file.endswith('.docx'):
+            template_name = os.path.splitext(template_file)[0]
+            zip_path = os.path.join(output_folder, f"{template_name}_files.zip")
+
+            with zipfile.ZipFile(zip_path, 'w') as zipf:
+                for index, row in data.iterrows():
                     template_path = os.path.join(template_folder, template_file)
                     new_doc = Document(template_path)
                     replacements = {column: str(row[column]) for column in data.columns}
@@ -78,9 +118,10 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    process_templates_from_folders(
+process_templates_from_folders(
+
         template_folder=args.template_folder,
         excel_folder=args.excel_folder,
         output_format=args.output_format,
         output_folder=args.output_folder
-    )
+)
